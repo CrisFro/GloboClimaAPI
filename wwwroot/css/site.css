@@ -1,0 +1,327 @@
+﻿:root {
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --border-radius: 0.35rem;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    --color-bg: #bebebe;
+    --color-bg-secondary: #ffffff;
+    --color-text: #000000;
+    font-family: 'Nunito Sans', sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    --color-bg: #bebebe;
+    --color-bg-secondary: #ffffff;
+    --color-text: #000000;
+    font-family: 'Nunito Sans', sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+    body.dark-mode {
+        --color-bg: #212E37;
+        --color-bg-secondary: #2B3743;
+        --color-text: #ffffff;
+    }
+
+.container {
+    flex: 1;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+.navbar {
+    background-color: var(--color-bg-secondary);
+    box-shadow: var(--box-shadow);
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-buttons .btn {
+    padding: 10px 20px;
+    border: 1px solid transparent; /* Borda padrão invisível */
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: #333; /* Cor do texto */
+    background-color: #f8f9fa; /* Fundo neutro */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+.navbar-buttons .btn-neutral {
+    background-color: #f8f9fa; /* Fundo neutro */
+}
+
+    .navbar-buttons .btn-neutral:hover {
+        background-color: #e2e6ea; /* Cor ao passar o mouse */
+        transform: translateY(-2px); /* Efeito de elevação */
+    }
+
+.btn-dark-mode {
+    background-color: #343a40; /* Cor do botão de dark mode */
+    color: white;
+}
+
+    .btn-dark-mode:hover {
+        background-color: #495057; /* Cor ao passar o mouse */
+        transform: translateY(-2px); /* Efeito de elevação */
+        
+    }
+
+.btn-dark-mode {
+    border-radius: 30px; /* Bordas arredondadas */
+    background-color: #343a40; /* Cor do botão de dark mode */
+    color: white;
+}
+
+    .btn-dark-mode:hover {
+        background-color: #495057; /* Cor ao passar o mouse */
+        transform: translateY(-2px); /* Efeito de elevação */
+    }
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-dark-mode {
+    background-color: var(--color-bg-secondary);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    opacity: 1;
+    transition: 0.3s;
+    color: var(--color-text);
+}
+
+    .btn-dark-mode:hover {
+        opacity: 0.6;
+    }
+
+.form-inline {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    gap: 1rem;
+    width: 100%;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-control {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.0rem;
+    min-height: 50px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+}
+
+.btn {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+    .btn:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: box-shadow 0.3s ease;
+    }
+
+body.dark-mode .btn {
+    background-color: #444;
+    color: #ffffff;
+    border: none;
+}
+
+    body.dark-mode .btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(128, 189, 255, 0.5);
+    }
+
+body.dark-mode .form-control {
+    background-color: #2B3743;
+    border: none;
+    color: #ffffff;
+}
+
+    body.dark-mode .form-control:focus {
+        background-color: #2B3743;
+        border: none;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(128, 189, 255, 0.5);
+    }
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center; 
+}
+
+.card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin: 1rem 0;
+    flex: 1 1 300px; 
+    min-width: 250px; 
+    max-width: 100%;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.weather-card {
+    position: relative;
+    color: #fff;
+}
+
+.weather-card {
+    position: relative;
+    color: #fff;
+}
+
+body.dark-mode .weather-card {
+    color: #fff;
+}
+
+body .weather-card {
+    color: #000;
+}
+
+body.dark-mode .card {
+    background-color: #2B3743;
+}
+
+body .card {
+    background-color: var(--color-bg-secondary);
+}
+
+.card-background {
+    position: absolute;
+    top: 2%;
+    left: 58%;
+    width: 40%;
+    object-fit: cover;
+    z-index: 0;
+    background-image: url('@Model.Weather.ImageUrl');
+}
+
+.country-flag {
+    width: 60px;
+}
+
+.temperature {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff5733;
+}
+
+.favorite-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.favorite-icon {
+    font-size: 24px;
+    color: #999; /* Cor inicial (não favoritado) */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+    .favorite-icon.favorited {
+        color: blue; /* Cor azul quando favoritado */
+    }
+
+    /* Tooltip para adicionar favoritos */
+    .favorite-icon[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        top: -30px;
+        right: 0;
+        white-space: nowrap;
+        font-size: 12px;
+        z-index: 100;
+    }
+
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    margin-top: auto;
+    width: 100%;
+}
+
+    .footer.dark-mode {
+        background-color: #2B3743;
+    }
+
+        .footer.dark-mode a {
+            color: #f1f1f1;
+        }
+
+@media (max-width: 1000px) {
+    .grid {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        flex-direction: column;
+    }
+
+    .card {
+        max-width: 100%; 
+    }
+}
+
+@media (max-width: 600px) {
+    .navbar-content {
+        font-size: 0.6rem;
+    }
+}

@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - GloboClimaApi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    @RenderSection("Styles", required: false)
+
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <h1>Bem-vindo ao Globo Clima</h1>
+            <div class="navbar-buttons">
+                <a href="@Url.Action("Login", "Account")" id="loginButton" class="btn btn-neutral">Entrar</a>
+                <a href="@Url.Action("Register", "Account")" id="registerButton" class="btn btn-neutral">Cadastrar</a>
+                <button class="btn-dark-mode">
+                    <i class="far fa-moon"></i>
+                    Dark Mode
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 GloboClima. Todos os direitos reservados.</p>
+        <p><a href="/swagger/index.html">Documentação da API</a></p>
+    </footer>
+
+    <script src="~/js/dark-mode.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const token = localStorage.getItem('authToken');
+
+            if (token) {
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('registerButton').style.display = 'none';
+
+                const navbarButtons = document.querySelector('.navbar-buttons');
+                const logoutButton = document.createElement('a');
+                logoutButton.innerHTML = "Sair";
+                logoutButton.className = "btn btn-danger";
+                logoutButton.href = "#";
+                logoutButton.onclick = function () {
+                    localStorage.removeItem('authToken');
+                    window.location.href = '/';
+                };
+                navbarButtons.appendChild(logoutButton);
+            }
+        });
+    </script>
+</body>
+</html>

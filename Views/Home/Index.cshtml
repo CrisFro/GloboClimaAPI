@@ -1,0 +1,149 @@
+﻿@model GloboClimaAPI.Models.CountryWeatherViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-5 text-center">
+    <form method="get" asp-action="Index" asp-controller="Home" class="form-inline justify-content-center mb-4">
+        <div class="form-group mr-2">
+            <label for="country" class="sr-only">País:</label>
+            <input type="text" id="country" name="country" class="form-control" placeholder="Digite o país" value="@ViewData["Country"]" />
+        </div>
+
+        <div class="form-group mr-2">
+            <label for="city" class="sr-only">Cidade:</label>
+            <input type="text" id="city" name="city" class="form-control" placeholder="Digite a cidade" value="@ViewData["City"]" />
+        </div>
+
+        <button type="submit" class="btn btn-success"><i class="fas fa-search"></i> Pesquisar</button>
+    </form>
+
+    <div class="grid">
+        @if (Model.Country != null)
+        {
+            <div class="card alert alert-info mb-4">
+                <div class="card-body">
+                    <div class="favorite-container">
+                        <i class="far fa-star favorite-icon" id="favorite-country-btn" data-favorited="false" data-country="@Model.Country.Name.Common" title="Adicionar aos Favoritos"></i>
+                    </div>
+
+                    <h3>País: @Model.Country.Name.Common</h3>
+                    <p><strong>Nome Oficial:</strong> @Model.Country.Name.Official</p>
+                    <p><strong>População:</strong> @string.Format("{0:N0}", Model.Country.Population)</p>
+                    <p><strong>Área:</strong> @string.Format("{0:N0}", Model.Country.Area) km²</p>
+                    <p><strong>Região:</strong> @Model.Country.Region</p>
+                    <p><strong>Capital:</strong> @Model.Country.Capital?.FirstOrDefault()</p>
+                    <p><strong>Idiomas:</strong> @string.Join(", ", Model.Country.Languages.Values)</p>
+
+
+                </div>
+            </div>
+        }
+
+        @if (Model.Weather != null)
+        {
+            <div class="card alert alert-info mb-4 weather-card">
+                <div class="card-body">
+                    <div class="favorite-container">
+                        <i class="far fa-star favorite-icon" id="favorite-city-btn" data-favorited="false" data-city="@Model.Weather.City" title="Adicionar aos Favoritos"></i>
+                    </div>
+                    <h2>Clima para @Model.Weather.City</h2>
+                    <p class="temperature">Temperatura: @Math.Round(Model.Weather.Temperature, 1) °C</p>
+                    <p><strong>Condições do Tempo:</strong> @Model.Weather.Description</p>
+                    <p><strong>Temperatura Mínima:</strong> @Math.Round(Model.Weather.MinTemperature, 1) °C</p>
+                    <p><strong>Temperatura Máxima:</strong> @Math.Round(Model.Weather.MaxTemperature, 1) °C</p>
+                    <p><strong>Umidade:</strong> @Model.Weather.Humidity %</p>
+                    <p><strong>Velocidade do Vento:</strong> @Model.Weather.WindSpeed m/s</p>
+                    <p><strong>Última Atualização:</strong> @Model.Weather.LastUpdated.ToString("g")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const getToken = () => {
+                const token = localStorage.getItem('authToken');
+                console.log("Token JWT recuperado na página home:", token); 
+                return token;
+            };
+
+            const token = getToken();
+            if (!token) {
+                console.log("Nenhum token encontrado ao carregar a página.");
+            } else {
+                console.log("Token encontrado:", token);
+            }
+
+            const isAuthenticated = () => {
+                const token = getToken();
+                if (!token) {
+                    console.log("Token não encontrado");
+                    alert("Você precisa estar logado para adicionar aos favoritos.");
+                    return false;
+                }
+
+                const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                console.log("Token decodificado:", decodedToken); 
+
+                return true;
+            };
+
+            const toggleFavorite = (favoriteElement, country, city = '') => {
+                if (!isAuthenticated()) return;
+
+                const token = getToken();
+                const isFavorited = favoriteElement.getAttribute('data-favorited') === 'true';
+                const url = isFavorited ? 'https://localhost:7140/api/favorites/remove' : 'https://localhost:7140/api/favorites/add';
+                const userId = JSON.parse(atob(token.split('.')[1])).nameid;
+
+                const requestData = {
+                    Country: country,
+                    City: city,
+                    UserId: userId 
+                };
+                console.log('Dados enviados:', requestData);
+
+                const config = {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                };
+
+                axios.post(url, requestData, config)
+                    .then(response => {
+                        updateFavoriteUI(favoriteElement, isFavorited);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao alterar favorito:', error.response ? error.response.data : error.message);
+                        alert('Erro ao alterar o favorito.');
+                    });
+            };
+
+            const setupFavoriteButtons = () => {
+                const favoriteCountryBtn = document.getElementById('favorite-country-btn');
+                const favoriteCityBtn = document.getElementById('favorite-city-btn');
+
+                if (favoriteCountryBtn) {
+                    favoriteCountryBtn.addEventListener('click', function () {
+                        const country = this.getAttribute('data-country');
+                        toggleFavorite(this, country);
+                    });
+                }
+
+                if (favoriteCityBtn) {
+                    favoriteCityBtn.addEventListener('click', function () {
+                        const country = this.getAttribute('data-country');
+                        const city = this.getAttribute('data-city');
+                        toggleFavorite(this, country, city);
+                    });
+                }
+            };
+
+            setupFavoriteButtons();
+        });
+    </script>
+}

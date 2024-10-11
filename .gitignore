@@ -1,0 +1,29 @@
+# Diretórios de compilação
+bin/
+obj/
+
+# Arquivos de configuração do Visual Studio
+*.user
+*.suo
+*.vs/
+*.vscode/
+
+# Pacotes NuGet
+*.nupkg
+*.snupkg
+packages/
+*.config
+
+# Arquivos temporários
+*.log
+*.tmp
+*.cache
+
+# Arquivos gerados
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# Outros
+*.sln.ide

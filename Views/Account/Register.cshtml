@@ -1,0 +1,85 @@
+﻿@model GloboClimaAPI.Models.RegisterModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+    <link rel="stylesheet" href="~/css/login.css?v=@DateTime.Now.Ticks" />
+s
+}
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="login-container">
+    <h2 class="login-title">Registrar</h2>
+
+    <form id="registerForm" class="login-form">
+        <div class="form-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="Username" class="form-control" required placeholder="Digite seu usuário" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="Email" class="form-control" required placeholder="Digite seu email" />
+        </div>
+        <div class="form-group">
+            <label for="fullName">Nome Completo</label>
+            <input type="text" id="fullName" name="FullName" class="form-control" required placeholder="Digite seu nome completo" />
+        </div>
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <div class="input-group">
+                <input type="password" id="password" name="Password" class="form-control" required placeholder="Digite sua senha" />
+                <div class="input-group-append">
+                    <span class="input-group-text">
+                        <i class="fa fa-fw fa-eye password-toggle-icon" role="button" aria-label="Mostrar senha"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+
+    <div class="login-footer">
+        <p>Já tem uma conta? <a href="/Account/Login">Entrar</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = {
+                Username: document.getElementById('username').value,
+                Email: document.getElementById('email').value,
+                FullName: document.getElementById('fullName').value,
+                Password: document.getElementById('password').value
+            };
+
+            const response = await fetch('/api/account/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                alert('Cadastro realizado com sucesso!');
+                window.location.href = '/api/account/login';
+            } else {
+                const errorData = await response.json();
+                alert('Erro: ' + JSON.stringify(errorData));
+            }
+        });
+
+        document.querySelector('.password-toggle-icon').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+}
