@@ -4,146 +4,218 @@
     Layout = "_Layout";
 }
 
-<div class="container mt-5 text-center">
-    <form method="get" asp-action="Index" asp-controller="Home" class="form-inline justify-content-center mb-4">
-        <div class="form-group mr-2">
-            <label for="country" class="sr-only">País:</label>
-            <input type="text" id="country" name="country" class="form-control" placeholder="Digite o país" value="@ViewData["Country"]" />
-        </div>
+@using System.Text.Json
 
-        <div class="form-group mr-2">
-            <label for="city" class="sr-only">Cidade:</label>
-            <input type="text" id="city" name="city" class="form-control" placeholder="Digite a cidade" value="@ViewData["City"]" />
-        </div>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12 main-content" id="mainContent">
+            <form method="get" asp-action="Index" asp-controller="Home" class="form-row g-3 mb-4 align-items-center">
+                <div class="col-md-5">
+                    <input type="text" id="country" name="country" class="form-control input-lg" placeholder="Digite o país" value="@ViewData["Country"]" />
+                </div>
+                <div class="col-md-5">
+                    <input type="text" id="city" name="city" class="form-control input-lg" placeholder="Digite a cidade" value="@ViewData["City"]" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg"><i class="fas fa-search"></i> Pesquisar</button>
+                </div>
+            </form>
 
-        <button type="submit" class="btn btn-success"><i class="fas fa-search"></i> Pesquisar</button>
-    </form>
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
 
-    <div class="grid">
-        @if (Model.Country != null)
-        {
-            <div class="card alert alert-info mb-4">
-                <div class="card-body">
-                    <div class="favorite-container">
-                        <i class="far fa-star favorite-icon" id="favorite-country-btn" data-favorited="false" data-country="@Model.Country.Name.Common" title="Adicionar aos Favoritos"></i>
+            <div class="row">
+                @if (Model?.Country != null && Model?.Weather == null)
+                {
+                    <div class="col-12 mb-4">
+                        <div class="card country-card text-center" style="position: relative;">
+                            <i class="far fa-star favorite-icon" id="favorite-country-btn" data-favorited="false" data-country="@Model.Country.Name.Common" title="Adicionar aos Favoritos" style="position: absolute; top: 10px; right: 10px;"></i>
+                            <img src="https://flagcdn.com/w320/@(Model.Country.Cca2.ToLower()).png" alt="@Model.Country.Name.Common" class="country-flag small-flag mb-3">
+                            <h3>@Model.Country.Name.Common</h3>
+                            <p><strong>Nome Oficial:</strong> @Model.Country.Name.Official</p>
+                            <p><strong>População:</strong> @string.Format("{0:N0}", Model.Country.Population)</p>
+                            <p><strong>Área:</strong> @string.Format("{0:N0}", Model.Country.Area) km²</p>
+                            <p><strong>Região:</strong> @Model.Country.Region</p>
+                            <p><strong>Capital:</strong> @Model.Country.Capital?.FirstOrDefault()</p>
+                            <p><strong>Idiomas:</strong> @string.Join(", ", Model.Country.Languages.Values)</p>
+                        </div>
+                    </div>
+                }
+
+                @if (Model?.Weather != null && Model?.Country == null)
+                {
+                    <div class="col-12 mb-4">
+                        <div class="card city-card text-center" style="position: relative;">
+                            <i class="far fa-star favorite-icon" id="favorite-city-btn" data-favorited="false" data-city="@Model.Weather.City" title="Adicionar aos Favoritos" style="position: absolute; top: 10px; right: 10px;"></i>
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#weekForecastModal" title="Ver Previsão Semanal" style="position: absolute; top: 10px; right: 50px;">
+                                <i class="fas fa-calendar-week"></i>
+                            </button>
+                            <img src="@Model.Weather.ImageUrl" alt="Weather Image" class="weather-image">
+                            <h3>Clima para @Model.Weather.City</h3>
+                            <p class="temperature">Temperatura: @Math.Round(Model.Weather.Temperature, 1) °C</p>
+                            <p><strong>Condições do Tempo:</strong> @Model.Weather.Description</p>
+                            <p><strong>Temperatura Mínima:</strong> @Math.Round(Model.Weather.MinTemperature, 1) °C</p>
+                            <p><strong>Temperatura Máxima:</strong> @Math.Round(Model.Weather.MaxTemperature, 1) °C</p>
+                            <p><strong>Umidade:</strong> @Model.Weather.Humidity %</p>
+                            <p><strong>Velocidade do Vento:</strong> @Model.Weather.WindSpeed m/s</p>
+                        </div>
+                    </div>
+                }
+
+                @if (Model?.Country != null && Model?.Weather != null)
+                {
+                    <div class="col-lg-6 col-md-12 mb-4">
+                        <div class="card country-city-card text-center @(Model.Country != null && Model.Weather != null ? "fixed-size" : "")">
+                            <i class="far fa-star favorite-icon" id="favorite-country-btn" data-favorited="false" data-country="@Model.Country.Name.Common" title="Adicionar aos Favoritos" style="position: absolute; top: 10px; right: 10px;"></i>
+                            <img src="https://flagcdn.com/w320/@(Model.Country.Cca2.ToLower()).png" alt="@Model.Country.Name.Common" class="country-flag mb-3">
+                            <h3>@Model.Country.Name.Common</h3>
+                            <p><strong>Nome Oficial:</strong> @Model.Country.Name.Official</p>
+                            <p><strong>População:</strong> @string.Format("{0:N0}", Model.Country.Population)</p>
+                            <p><strong>Área:</strong> @string.Format("{0:N0}", Model.Country.Area) km²</p>
+                            <p><strong>Região:</strong> @Model.Country.Region</p>
+                            <p><strong>Capital:</strong> @Model.Country.Capital?.FirstOrDefault()</p>
+                            <p><strong>Idiomas:</strong> @string.Join(", ", Model.Country.Languages.Values)</p>
+                        </div>
                     </div>
 
-                    <h3>País: @Model.Country.Name.Common</h3>
-                    <p><strong>Nome Oficial:</strong> @Model.Country.Name.Official</p>
-                    <p><strong>População:</strong> @string.Format("{0:N0}", Model.Country.Population)</p>
-                    <p><strong>Área:</strong> @string.Format("{0:N0}", Model.Country.Area) km²</p>
-                    <p><strong>Região:</strong> @Model.Country.Region</p>
-                    <p><strong>Capital:</strong> @Model.Country.Capital?.FirstOrDefault()</p>
-                    <p><strong>Idiomas:</strong> @string.Join(", ", Model.Country.Languages.Values)</p>
-
-
-                </div>
-            </div>
-        }
-
-        @if (Model.Weather != null)
-        {
-            <div class="card alert alert-info mb-4 weather-card">
-                <div class="card-body">
-                    <div class="favorite-container">
-                        <i class="far fa-star favorite-icon" id="favorite-city-btn" data-favorited="false" data-city="@Model.Weather.City" title="Adicionar aos Favoritos"></i>
+                    <div class="col-lg-6 col-md-12 mb-4">
+                        <div class="card country-city-card text-center @(Model.Country != null && Model.Weather != null ? "fixed-size" : "")">
+                            <i class="far fa-star favorite-icon" id="favorite-city-btn" data-favorited="false" data-city="@Model.Weather.City" title="Adicionar aos Favoritos" style="position: absolute; top: 10px; right: 10px;"></i>
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#weekForecastModal" title="Ver Previsão Semanal" style="position: absolute; top: 10px; right: 50px;">
+                                <i class="fas fa-calendar-week"></i>
+                            </button>
+                            <img src="@Model.Weather.ImageUrl" alt="Weather Image" class="weather-image">
+                            <h3>Clima para @Model.Weather.City</h3>
+                            <p class="temperature">Temperatura: @Math.Round(Model.Weather.Temperature, 1) °C</p>
+                            <p><strong>Condições do Tempo:</strong> @Model.Weather.Description</p>
+                            <p><strong>Temperatura Mínima:</strong> @Math.Round(Model.Weather.MinTemperature, 1) °C</p>
+                            <p><strong>Temperatura Máxima:</strong> @Math.Round(Model.Weather.MaxTemperature, 1) °C</p>
+                            <p><strong>Umidade:</strong> @Model.Weather.Humidity %</p>
+                            <p><strong>Velocidade do Vento:</strong> @Model.Weather.WindSpeed m/s</p>
+                        </div>
                     </div>
-                    <h2>Clima para @Model.Weather.City</h2>
-                    <p class="temperature">Temperatura: @Math.Round(Model.Weather.Temperature, 1) °C</p>
-                    <p><strong>Condições do Tempo:</strong> @Model.Weather.Description</p>
-                    <p><strong>Temperatura Mínima:</strong> @Math.Round(Model.Weather.MinTemperature, 1) °C</p>
-                    <p><strong>Temperatura Máxima:</strong> @Math.Round(Model.Weather.MaxTemperature, 1) °C</p>
-                    <p><strong>Umidade:</strong> @Model.Weather.Humidity %</p>
-                    <p><strong>Velocidade do Vento:</strong> @Model.Weather.WindSpeed m/s</p>
-                    <p><strong>Última Atualização:</strong> @Model.Weather.LastUpdated.ToString("g")</p>
-                </div>
+                }
+
+                @if (Model?.Weather != null && Model.Weather.Forecast != null && Model.Weather.Forecast.Any())
+                {
+                    <div class="modal fade" id="weekForecastModal" tabindex="-1" aria-labelledby="weekForecastLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="weekForecastLabel">Previsão da Semana para @Model.Weather.City</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="forecast-container">
+                                        @foreach (var forecast in Model.Weather.Forecast)
+                                        {
+                                            <div class="forecast-card">
+                                                <h5>@forecast.Date.ToString("ddd, dd MMM")</h5>
+                                                <p>@forecast.Date.ToString("HH:mm")</p>
+                                                <p>Min: @Math.Round(forecast.MinTemperature, 1) °C</p>
+                                                <p>Max: @Math.Round(forecast.MaxTemperature, 1) °C</p>
+                                                <p>@forecast.Description</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
     </div>
 </div>
 
+
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/index.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const getToken = () => {
-                const token = localStorage.getItem('authToken');
-                console.log("Token JWT recuperado na página home:", token); 
-                return token;
-            };
+            var labels = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
+            ? Model.Weather.Forecast.Select(f => f.Date.ToString("ddd")).ToList()
+            : new List<string>())));
 
-            const token = getToken();
-            if (!token) {
-                console.log("Nenhum token encontrado ao carregar a página.");
-            } else {
-                console.log("Token encontrado:", token);
-            }
+            var minTemperatures = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
+            ? Model.Weather.Forecast.Select(f => Math.Round(f.MinTemperature, 1)).ToList()
+            : new List<double>())));
 
-            const isAuthenticated = () => {
-                const token = getToken();
-                if (!token) {
-                    console.log("Token não encontrado");
-                    alert("Você precisa estar logado para adicionar aos favoritos.");
-                    return false;
+            var maxTemperatures = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
+            ? Model.Weather.Forecast.Select(f => Math.Round(f.MaxTemperature, 1)).ToList()
+            : new List<double>())));
+
+            console.log('Labels:', labels);
+            console.log('Min Temperatures:', minTemperatures);
+            console.log('Max Temperatures:', maxTemperatures);
+
+            var ctx = document.getElementById('temperatureChart').getContext('2d');
+            var temperatureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperatura Mínima (°C)',
+                        data: minTemperatures,
+                        borderColor: '#3498db',
+                        fill: false
+                    }, {
+                        label: 'Temperatura Máxima (°C)',
+                        data: maxTemperatures,
+                        borderColor: '#e74c3c',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { display: true },
+                        y: { display: true }
+                    }
                 }
-
-                const decodedToken = JSON.parse(atob(token.split('.')[1]));
-                console.log("Token decodificado:", decodedToken); 
-
-                return true;
-            };
-
-            const toggleFavorite = (favoriteElement, country, city = '') => {
-                if (!isAuthenticated()) return;
-
-                const token = getToken();
-                const isFavorited = favoriteElement.getAttribute('data-favorited') === 'true';
-                const url = isFavorited ? 'https://localhost:7140/api/favorites/remove' : 'https://localhost:7140/api/favorites/add';
-                const userId = JSON.parse(atob(token.split('.')[1])).nameid;
-
-                const requestData = {
-                    Country: country,
-                    City: city,
-                    UserId: userId 
-                };
-                console.log('Dados enviados:', requestData);
-
-                const config = {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                };
-
-                axios.post(url, requestData, config)
-                    .then(response => {
-                        updateFavoriteUI(favoriteElement, isFavorited);
-                    })
-                    .catch(error => {
-                        console.error('Erro ao alterar favorito:', error.response ? error.response.data : error.message);
-                        alert('Erro ao alterar o favorito.');
-                    });
-            };
-
-            const setupFavoriteButtons = () => {
-                const favoriteCountryBtn = document.getElementById('favorite-country-btn');
-                const favoriteCityBtn = document.getElementById('favorite-city-btn');
-
-                if (favoriteCountryBtn) {
-                    favoriteCountryBtn.addEventListener('click', function () {
-                        const country = this.getAttribute('data-country');
-                        toggleFavorite(this, country);
-                    });
-                }
-
-                if (favoriteCityBtn) {
-                    favoriteCityBtn.addEventListener('click', function () {
-                        const country = this.getAttribute('data-country');
-                        const city = this.getAttribute('data-city');
-                        toggleFavorite(this, country, city);
-                    });
-                }
-            };
-
-            setupFavoriteButtons();
+            });
         });
+
     </script>
+}
+@functions {
+    string GetWeatherIcon(string description)
+    {
+        var translatedDescription = description switch
+        {
+            "clear sky" => "céu limpo",
+            "few clouds" => "poucas nuvens",
+            "scattered clouds" => "nuvens esparsas",
+            "broken clouds" => "nuvens fragmentadas",
+            "shower rain" => "chuva rápida",
+            "rain" => "chuva",
+            "thunderstorm" => "tempestade",
+            "snow" => "neve",
+            "mist" => "neblina",
+            _ => description
+        };
+
+        return translatedDescription switch
+        {
+            "céu limpo" or "clear sky" => "day-sunny",
+            "poucas nuvens" or "few clouds" => "day-cloudy",
+            "nuvens esparsas" or "scattered clouds" => "cloud",
+            "chuva" or "rain" => "rain",
+            "chuva rápida" or "shower rain" => "showers",
+            "neve" or "snow" => "snow",
+            "tempestade" or "thunderstorm" => "thunderstorm",
+            "neblina" or "mist" => "fog",
+            _ => "day-cloudy"
+        };
+    }
 }

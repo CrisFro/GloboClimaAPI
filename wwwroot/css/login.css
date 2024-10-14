@@ -51,12 +51,12 @@
 .input-group {
     display: flex;
     align-items: center;
-    position: relative; 
+    position: relative;
 }
 
     .input-group .form-control {
-        padding-right: 40px; 
-        flex: 1; 
+        padding-right: 40px;
+        flex: 1;
     }
 
 .input-group-append {
@@ -81,6 +81,29 @@
         .input-group-append i:hover {
             color: #007bff;
         }
+
+.btn-primary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #5a6268;
+        border-color: #5a6268;
+        transform: scale(1.05);
+    }
+
+    .btn-primary:active {
+        background-color: #4e555b;
+        border-color: #4e555b;
+        transform: scale(1);
+    }
 
 .dark-mode {
     background-color: #121212;

@@ -28,7 +28,7 @@ namespace GloboClimaAPI.Services
                     string countryCode = countryData.Cca2?.ToLower();
                     if (!string.IsNullOrEmpty(countryCode))
                     {
-                        countryData.Cca2 = $"https://flagcdn.com/{countryCode}.svg";
+                        countryData.Cca2 = countryCode;
                     }
                 }
 
@@ -42,7 +42,7 @@ namespace GloboClimaAPI.Services
             catch (JsonException ex)
             {
                 Console.WriteLine($"Erro ao deserializar os dados: {ex.Message}");
-                return null; 
+                return null;
             }
         }
     }

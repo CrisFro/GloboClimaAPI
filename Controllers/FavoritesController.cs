@@ -7,22 +7,28 @@ using System.Security.Claims;
 namespace GloboClimaAPI.Controllers
 {
 
-    [Authorize] 
+    [Authorize]
     [Route("api/favorites")]
     [ApiController]
     public class FavoritesController : ControllerBase
     {
         private readonly FavoritesService _favoritesService;
-        private readonly ILogger<FavoritesController> _logger;
 
-        public FavoritesController(FavoritesService favoritesService, ILogger<FavoritesController> logger)
+        public FavoritesController(FavoritesService favoritesService)
         {
             _favoritesService = favoritesService;
-            _logger = logger;
+        }
+
+        [HttpGet("list")]
+        public async Task<IActionResult> List()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<Favorite> favorites = await _favoritesService.GetFavoritesAsync(userId);
+            return Ok(favorites); 
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddToFavorites([FromBody] Favorite favorite)
+        public async Task<IActionResult> AddToFavorites([FromBody] FavoriteDto favoriteDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -30,45 +36,55 @@ namespace GloboClimaAPI.Controllers
                 return Unauthorized("Usuário não autenticado.");
             }
 
-            favorite.Id = Guid.NewGuid().ToString();
-            favorite.UserId = userId;
-
-            if (!ModelState.IsValid)
+            var favorite = new Favorite
             {
-                return BadRequest(ModelState);
+                Id = Guid.NewGuid().ToString(),
+                UserId = userId,
+                Country = favoriteDto.Country,
+                City = favoriteDto.City
+            };
+
+            if (string.IsNullOrEmpty(favorite.Country) && string.IsNullOrEmpty(favorite.City))
+            {
+                return BadRequest("Você deve fornecer uma cidade ou um país.");
             }
 
-            try
-            {
-                await _favoritesService.AddFavoriteAsync(favorite);
-                return Ok(new { message = "Favorito adicionado com sucesso!" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro ao adicionar favorito: {ex.Message}");
-            }
-        }
+            // Verifica se o favorito já existe
+            var existingFavorites = await _favoritesService.GetFavoritesAsync(userId);
+            bool alreadyFavorited = existingFavorites.Any(f =>
+                (f.City == favorite.City && favorite.City != null) ||
+                (f.Country == favorite.Country && favorite.Country != null));
 
-        [HttpGet("list")]
-        public async Task<IActionResult> ListFavorites()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            if (alreadyFavorited)
+            {
+                return BadRequest("Você já adicionou este favorito.");
+            }
 
-            var favorites = await _favoritesService.GetFavoritesAsync(userId);
-            return Ok(favorites);
+            await _favoritesService.AddFavoriteAsync(favorite);
+            return Ok(new { message = "Favorito adicionado com sucesso!" });
         }
 
         [HttpPost("remove")]
-        public async Task<IActionResult> RemoveFavorite([FromBody] Favorite favorite)
+        public async Task<IActionResult> RemoveFavorite([FromBody] FavoriteIdDto favoriteIdDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
-            if (favorite.UserId != userId)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (await _favoritesService.RemoveFavoriteAsync(favoriteIdDto.Id, userId))
             {
-                return Unauthorized("Você só pode remover seus próprios favoritos.");
+                return Ok(new { message = "Favorito removido com sucesso!" });
             }
 
-            await _favoritesService.RemoveFavoriteAsync(favorite);
-            return Ok(new { message = "Favorito removido com sucesso!" });
+            return Unauthorized("Você só pode remover seus próprios favoritos.");
+        }
+
+        public class FavoriteIdDto
+        {
+            public string? Id { get; set; }
+        }
+
+        public class FavoriteDto
+        {
+            public string? Country { get; set; }
+            public string? City { get; set; }
         }
     }
 }

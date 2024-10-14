@@ -12,22 +12,37 @@ namespace GloboClimaAPI.Services
             _dbContext = dbContext;
         }
 
-        // Busca os favoritos do usuário
         public async Task<List<Favorite>> GetFavoritesAsync(string userId)
         {
-            return await _dbContext.QueryAsync<Favorite>(userId).GetRemainingAsync();
+            var conditions = new List<ScanCondition>
+            {
+                new ScanCondition(nameof(Favorite.UserId), Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, userId)
+            };
+
+            var search = _dbContext.ScanAsync<Favorite>(conditions);
+            return await search.GetNextSetAsync();
         }
 
-        // Adiciona um favorito ao banco de dados
+        public async Task<Favorite> GetFavoriteByIdAsync(string favoriteId, string userId)
+        {
+            var favorite = await _dbContext.LoadAsync<Favorite>(favoriteId);
+            return (favorite != null && favorite.UserId == userId) ? favorite : null;
+        }
+
         public async Task AddFavoriteAsync(Favorite favorite)
         {
-            await _dbContext.SaveAsync(favorite); // Salva no DynamoDB
+            await _dbContext.SaveAsync(favorite);
         }
 
-        // Remove um favorito
-        public async Task RemoveFavoriteAsync(Favorite favorite)
+        public async Task<bool> RemoveFavoriteAsync(string favoriteId, string userId)
         {
-            await _dbContext.DeleteAsync(favorite);
+            var favorite = await GetFavoriteByIdAsync(favoriteId, userId);
+            if (favorite != null)
+            {
+                await _dbContext.DeleteAsync(favorite);
+                return true;
+            }
+            return false;
         }
     }
 

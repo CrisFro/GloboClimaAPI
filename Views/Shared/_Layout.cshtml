@@ -1,41 +1,52 @@
 ﻿<!DOCTYPE html>
-<html lang="br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - GloboClimaApi</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+    <link rel="stylesheet" href="/css/site.css">
+    <link id="dark-mode" rel="stylesheet" href="/css/dark-mode.css" disabled>
     @RenderSection("Styles", required: false)
-
-    <link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <button class="btn btn-no-border" id="toggleSidebar" title="Meus Favoritos" style="display: none;">
+                <i class="fas fa-star" id="sidebarIcon"></i>
+            </button>
 
-    <nav class="navbar">
-        <div class="container navbar-content">
-            <h1>Bem-vindo ao Globo Clima</h1>
-            <div class="navbar-buttons">
+            <a class="navbar-brand ml-2" href="/">Bem-vindo ao GloboClima</a>
+
+            <div class="navbar-buttons d-flex align-items-center ml-auto">
                 <a href="@Url.Action("Login", "Account")" id="loginButton" class="btn btn-neutral">Entrar</a>
                 <a href="@Url.Action("Register", "Account")" id="registerButton" class="btn btn-neutral">Cadastrar</a>
-                <button class="btn-dark-mode">
-                    <i class="far fa-moon"></i>
-                    Dark Mode
+                <button class="btn btn-dark-mode ml-2">
+                    <i class="far fa-moon"></i> Dark Mode
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="container">
+    <div class="sidebar" id="favoritesSidebar">
+        <h3>Meus Favoritos</h3>
+        <div id="favoriteCardsContainer" class="favorite-card-container">
+        </div>
+    </div>
+
+
+    <main id="mainContent" class="container mt-4 main-content">
         @RenderBody()
     </main>
 
-    <footer class="footer">
+    <footer class="footer mt-auto">
         <p>&copy; 2024 GloboClima. Todos os direitos reservados.</p>
         <p><a href="/swagger/index.html">Documentação da API</a></p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>   
     <script src="~/js/dark-mode.js"></script>
 
     @RenderSection("Scripts", required: false)
@@ -44,20 +55,26 @@
         document.addEventListener("DOMContentLoaded", function () {
             const token = localStorage.getItem('authToken');
 
-            if (token) {
-                document.getElementById('loginButton').style.display = 'none';
-                document.getElementById('registerButton').style.display = 'none';
+            const loginButton = document.getElementById('loginButton');
+            const registerButton = document.getElementById('registerButton');
+            const navbarButtons = document.querySelector('.navbar-buttons');
 
-                const navbarButtons = document.querySelector('.navbar-buttons');
+            if (token) {
+                loginButton.style.display = 'none';
+                registerButton.style.display = 'none';
+
                 const logoutButton = document.createElement('a');
                 logoutButton.innerHTML = "Sair";
-                logoutButton.className = "btn btn-danger";
+                logoutButton.className = "btn btn-danger ml-2";
                 logoutButton.href = "#";
                 logoutButton.onclick = function () {
                     localStorage.removeItem('authToken');
                     window.location.href = '/';
                 };
                 navbarButtons.appendChild(logoutButton);
+            } else {
+                loginButton.style.display = 'inline-block';
+                registerButton.style.display = 'inline-block';
             }
         });
     </script>

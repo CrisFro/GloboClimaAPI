@@ -7,10 +7,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.Extensions.WebEncoders;
+using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona o serviço de logging
+builder.Services.Configure<WebEncoderOptions>(options =>
+{
+    options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(UnicodeRanges.All);
+});
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
@@ -30,7 +36,6 @@ var dynamoDbClient = new AmazonDynamoDBClient(credentials, Amazon.RegionEndpoint
 builder.Services.AddSingleton<IAmazonDynamoDB>(dynamoDbClient);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
-// Serviços personalizados
 builder.Services.AddHttpClient<WeatherService>();
 builder.Services.AddHttpClient<CountryService>();
 builder.Services.AddScoped<FavoritesService>();
@@ -56,7 +61,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), // Adicione esta linha
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), 
         ValidateIssuer = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidateAudience = true,
@@ -118,7 +123,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Middlewares
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -128,7 +132,6 @@ app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Rotas
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

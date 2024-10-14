@@ -42,7 +42,7 @@
 @section Scripts {
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             const formData = {
                 Username: document.getElementById('username').value,
@@ -60,13 +60,9 @@
 
                 if (response.ok) {
                     const data = await response.json();
-
                     localStorage.setItem('authToken', data.token);
-                    console.log('Token armazenado:', data.token);
-
-                    alert('Login realizado com sucesso! Token armazenado.');
-
-                    window.location.href = '/home';
+                    alert('Login realizado com sucesso!');
+                    window.location.href = '/'; 
                 } else {
                     const errorData = await response.json();
                     alert('Erro: ' + JSON.stringify(errorData));
