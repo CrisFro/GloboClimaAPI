@@ -118,8 +118,8 @@
                                             <div class="forecast-card">
                                                 <h5>@forecast.Date.ToString("ddd, dd MMM")</h5>
                                                 <p>@forecast.Date.ToString("HH:mm")</p>
-                                                <p>Min: @Math.Round(forecast.MinTemperature, 1) °C</p>
-                                                <p>Max: @Math.Round(forecast.MaxTemperature, 1) °C</p>
+                                                <p class="temperature">Min: @Math.Round(forecast.MinTemperature, 1) °C</p>
+                                                <p class="temperature">Max: @Math.Round(forecast.MaxTemperature, 1) °C</p>
                                                 <p>@forecast.Description</p>
                                             </div>
                                         }
@@ -141,52 +141,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="~/js/index.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var labels = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
-            ? Model.Weather.Forecast.Select(f => f.Date.ToString("ddd")).ToList()
-            : new List<string>())));
-
-            var minTemperatures = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
-            ? Model.Weather.Forecast.Select(f => Math.Round(f.MinTemperature, 1)).ToList()
-            : new List<double>())));
-
-            var maxTemperatures = @(Html.Raw(JsonSerializer.Serialize(Model?.Weather?.Forecast != null && Model.Weather.Forecast.Any()
-            ? Model.Weather.Forecast.Select(f => Math.Round(f.MaxTemperature, 1)).ToList()
-            : new List<double>())));
-
-            console.log('Labels:', labels);
-            console.log('Min Temperatures:', minTemperatures);
-            console.log('Max Temperatures:', maxTemperatures);
-
-            var ctx = document.getElementById('temperatureChart').getContext('2d');
-            var temperatureChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Temperatura Mínima (°C)',
-                        data: minTemperatures,
-                        borderColor: '#3498db',
-                        fill: false
-                    }, {
-                        label: 'Temperatura Máxima (°C)',
-                        data: maxTemperatures,
-                        borderColor: '#e74c3c',
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { display: true },
-                        y: { display: true }
-                    }
-                }
-            });
-        });
-
-    </script>
+  
 }
 @functions {
     string GetWeatherIcon(string description)
@@ -202,6 +157,14 @@
             "thunderstorm" => "tempestade",
             "snow" => "neve",
             "mist" => "neblina",
+            "light rain" => "chuva leve",
+            "moderate rain" => "chuva moderada",
+            "heavy rain" => "chuva forte",
+            "drizzle" => "garoa",
+            "overcast clouds" => "nuvens carregadas",
+            "light snow" => "neve leve",
+            "heavy snow" => "neve pesada",
+            "hail" => "granizo",
             _ => description
         };
 
@@ -210,9 +173,18 @@
             "céu limpo" or "clear sky" => "day-sunny",
             "poucas nuvens" or "few clouds" => "day-cloudy",
             "nuvens esparsas" or "scattered clouds" => "cloud",
+            "nuvens fragmentadas" or "broken clouds" => "cloudy",
             "chuva" or "rain" => "rain",
             "chuva rápida" or "shower rain" => "showers",
+            "chuva leve" or "light rain" => "rain-mix",
+            "chuva moderada" or "moderate rain" => "rain",
+            "chuva forte" or "heavy rain" => "rain-heavy",
+            "garoa" or "drizzle" => "sprinkle",
             "neve" or "snow" => "snow",
+            "neve leve" or "light snow" => "snowflake",
+            "neve pesada" or "heavy snow" => "snow-heavy",
+            "granizo" or "hail" => "hail",
+            "nuvens carregadas" or "overcast clouds" => "cloudy-gusts",
             "tempestade" or "thunderstorm" => "thunderstorm",
             "neblina" or "mist" => "fog",
             _ => "day-cloudy"

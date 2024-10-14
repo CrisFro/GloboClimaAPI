@@ -7,26 +7,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchForm = document.querySelector('form');
     const countryInput = document.getElementById('country');
     const cityInput = document.getElementById('city');
-    const darkModeLink = document.getElementById('dark-mode');
-    const darkModeButton = document.querySelector('.btn-dark-mode');
 
     if (token) {
-        toggleSidebarBtn.style.display = 'block'; 
-        loadFavorites(); 
+        toggleSidebarBtn.style.display = 'block';
+        loadFavorites();
     } else {
         sidebar.classList.remove('active');
-        toggleSidebarBtn.style.display = 'none'; 
+        toggleSidebarBtn.style.display = 'none';
     }
-
-    const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
 
     toggleSidebarBtn.addEventListener('click', function () {
         sidebar.classList.toggle('active');
 
         if (sidebar.classList.contains('active')) {
-            mainContent.style.marginLeft = "240px"; 
+            mainContent.style.marginLeft = "250px";
         } else {
-            mainContent.style.marginLeft = "auto"; 
+            mainContent.style.marginLeft = "auto";
             mainContent.style.marginRight = "auto";
         }
 
@@ -38,30 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
             sidebarIcon.classList.add('fa-star');
         }
     });
-
-    if (darkModeEnabled) {
-        darkModeLink.removeAttribute('disabled'); 
-        darkModeButton.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-    }
-
-    darkModeButton.addEventListener('click', () => {
-        const isDarkMode = darkModeLink.hasAttribute('disabled');
-        if (isDarkMode) {
-            darkModeLink.removeAttribute('disabled');
-            localStorage.setItem('darkMode', 'true');
-            darkModeButton.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        } else {
-            darkModeLink.setAttribute('disabled', true);
-            localStorage.setItem('darkMode', 'false');
-            darkModeButton.innerHTML = '<i class="far fa-moon"></i> Dark Mode';
-        }
-    });
-
-    if (token) {
-        loadFavorites();
-    } else {
-        sidebar.classList.remove('active');
-    }
 
     async function loadFavorites() {
         try {
@@ -88,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const container = document.getElementById('favoriteCardsContainer');
         if (!container) return;
 
+        console.log('Received favorites:', favorites); 
         container.innerHTML = '';
 
         favorites.forEach(favorite => {
@@ -96,24 +69,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (favorite.city) {
                 card.innerHTML = `
-                <div class="favorite-info">
-                    <p>Cidade: <strong>${favorite.city}</strong></p>
-                    <button class="remove-favorite" data-id="${favorite.id}" style="cursor: pointer; color: red;">&times;</button>
-                </div>
-            `;
+            <div class="favorite-content">
+                <span>Cidade: <strong>${favorite.city}</strong></span>
+                <button class="remove-favorite" data-id="${favorite.id}" style="cursor: pointer;">&times;</button>
+            </div>`;
             } else if (favorite.country) {
                 card.innerHTML = `
-                <div class="favorite-info">
-                    <p>País: <strong>${favorite.country}</strong></p>
-                    <button class="remove-favorite" data-id="${favorite.id}" style="cursor: pointer; color: red;">&times;</button>
-                </div>
-            `;
+            <div class="favorite-content">
+                <span>Pa&#237;s: <strong>${favorite.country}</strong></span>
+                <button class="remove-favorite" data-id="${favorite.id}" style="cursor: pointer;">&times;</button>
+            </div>`;
             }
+
+            card.addEventListener('dblclick', function () {
+                searchFavorite(favorite);
+            });
 
             const removeButton = card.querySelector('.remove-favorite');
             removeButton.addEventListener('click', function (event) {
-                event.stopPropagation(); 
-                removeFavorite(favorite.id); 
+                event.stopPropagation();
+                removeFavorite(favorite.id);
             });
 
             container.appendChild(card);
@@ -130,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ id: favoriteId }) 
+                body: JSON.stringify({ id: favoriteId })
             });
 
             if (response.ok) {
@@ -155,10 +130,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 icon.setAttribute('data-favorited', 'true');
                 icon.classList.remove('far', 'fa-star');
                 icon.classList.add('fas', 'fa-star');
+                icon.style.pointerEvents = 'none';
             } else {
                 icon.setAttribute('data-favorited', 'false');
                 icon.classList.remove('fas', 'fa-star');
                 icon.classList.add('far', 'fa-star');
+                icon.style.pointerEvents = 'auto';
             }
         });
     }
@@ -166,10 +143,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function searchFavorite(favorite) {
         if (favorite.city) {
             cityInput.value = favorite.city;
-            countryInput.value = ''; 
+            countryInput.value = '';
         } else if (favorite.country) {
             countryInput.value = favorite.country;
-            cityInput.value = ''; 
+            cityInput.value = '';
         }
 
         searchForm.submit();
@@ -189,13 +166,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.classList.remove('fas', 'fa-star');
                 this.classList.add('far', 'fa-star');
             } else {
-                addFavorite({ country: country || null, city: city || null }); 
+                addFavorite({ country: country || null, city: city || null });
                 this.setAttribute('data-favorited', 'true');
                 this.classList.remove('far', 'fa-star');
                 this.classList.add('fas', 'fa-star');
             }
 
-            event.stopPropagation(); 
+            event.stopPropagation();
         });
     });
 
@@ -206,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Você precisa estar logado para adicionar favoritos.");
             toggleSidebarBtn.style.display = 'none';
             sidebar.classList.remove('active');
-            return; 
+            return;
         }
 
         try {
@@ -221,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 alert("Favorito adicionado com sucesso!");
-                loadFavorites(); 
+                loadFavorites();
             } else {
                 console.error('Erro ao adicionar favorito.');
             }

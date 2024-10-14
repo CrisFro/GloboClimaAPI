@@ -1,14 +1,14 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - GloboClimaApi</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="/css/site.css">
-    <link id="dark-mode" rel="stylesheet" href="/css/dark-mode.css" disabled>
+    <link id="dark-mode" rel="stylesheet" href="/css/dark-mode.css">
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -21,8 +21,8 @@
             <a class="navbar-brand ml-2" href="/">Bem-vindo ao GloboClima</a>
 
             <div class="navbar-buttons d-flex align-items-center ml-auto">
-                <a href="@Url.Action("Login", "Account")" id="loginButton" class="btn btn-neutral">Entrar</a>
-                <a href="@Url.Action("Register", "Account")" id="registerButton" class="btn btn-neutral">Cadastrar</a>
+                <a href="@Url.Action("Login", "Auth")" id="loginButton" class="btn btn-neutral">Entrar</a>
+                <a href="@Url.Action("Register", "Auth")" id="registerButton" class="btn btn-neutral">Cadastrar</a>
                 <button class="btn btn-dark-mode ml-2">
                     <i class="far fa-moon"></i> Dark Mode
                 </button>
@@ -64,14 +64,19 @@
                 registerButton.style.display = 'none';
 
                 const logoutButton = document.createElement('a');
-                logoutButton.innerHTML = "Sair";
-                logoutButton.className = "btn btn-danger ml-2";
+                logoutButton.innerHTML = `<i class="fas fa-power-off"></i>`;
+                logoutButton.className = "btn logout-button ml-2";
                 logoutButton.href = "#";
                 logoutButton.onclick = function () {
                     localStorage.removeItem('authToken');
                     window.location.href = '/';
                 };
+
                 navbarButtons.appendChild(logoutButton);
+
+                if (darkModeEnabled) {
+                    logoutButton.classList.add('dark-mode-logout');
+                }
             } else {
                 loginButton.style.display = 'inline-block';
                 registerButton.style.display = 'inline-block';

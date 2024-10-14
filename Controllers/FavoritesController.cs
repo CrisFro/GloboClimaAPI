@@ -49,7 +49,6 @@ namespace GloboClimaAPI.Controllers
                 return BadRequest("Você deve fornecer uma cidade ou um país.");
             }
 
-            // Verifica se o favorito já existe
             var existingFavorites = await _favoritesService.GetFavoritesAsync(userId);
             bool alreadyFavorited = existingFavorites.Any(f =>
                 (f.City == favorite.City && favorite.City != null) ||

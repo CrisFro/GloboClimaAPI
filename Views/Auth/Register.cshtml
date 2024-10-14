@@ -41,7 +41,7 @@
     </form>
 
     <div class="login-footer">
-        <p>Já tem uma conta? <a href="/Account/Login">Entrar</a></p>
+        <p>Já tem uma conta? <a href="/login">Entrar</a></p> 
     </div>
 </div>
 
@@ -57,7 +57,7 @@
                 Password: document.getElementById('password').value
             };
 
-            const response = await fetch('/api/account/register', {
+            const response = await fetch('/api/accountapi/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -67,7 +67,7 @@
 
             if (response.ok) {
                 alert('Cadastro realizado com sucesso!');
-                window.location.href = '/api/account/login';
+                window.location.href = '/login';
             } else {
                 const errorData = await response.json();
                 alert('Erro: ' + JSON.stringify(errorData));

@@ -9,22 +9,16 @@ using System.Text;
 namespace GloboClimaAPI.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    [ApiController]
+    public class AccountApiController : ControllerBase
     {
         private readonly UserService _userService;
         private readonly string _jwtKey;
 
-        public AccountController(UserService userService, IConfiguration configuration)
+        public AccountApiController(UserService userService, IConfiguration configuration)
         {
             _userService = userService;
-            _jwtKey = configuration["Jwt:Key"]; 
-
-        }
-
-        [HttpGet("register")]
-        public IActionResult Register()
-        {
-            return View();
+            _jwtKey = configuration["Jwt:Key"];
         }
 
         [HttpPost("register")]
@@ -37,7 +31,7 @@ namespace GloboClimaAPI.Controllers
 
             var user = new User
             {
-                Id = Guid.NewGuid().ToString(), 
+                Id = Guid.NewGuid().ToString(),
                 Username = model.Username,
                 PasswordHash = HashPassword(model.Password),
                 Email = model.Email,
@@ -46,7 +40,7 @@ namespace GloboClimaAPI.Controllers
 
             try
             {
-                await _userService.SaveUserAsync(user); 
+                await _userService.SaveUserAsync(user);
                 return CreatedAtAction(nameof(Register), new { username = user.Username }, user);
             }
             catch (Exception ex)
@@ -54,13 +48,6 @@ namespace GloboClimaAPI.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
-        [HttpGet("login")]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -77,18 +64,12 @@ namespace GloboClimaAPI.Controllers
                 return Unauthorized("Usuário não encontrado.");
             }
 
-            if (string.IsNullOrWhiteSpace(user.PasswordHash))
-            {
-                return BadRequest("Hash de senha está nulo ou vazio.");
-            }
-
             if (!BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
                 return Unauthorized("Senha inválida.");
             }
 
             var token = GenerateJwtToken(user);
-
             return Ok(new { token });
         }
 
@@ -103,7 +84,7 @@ namespace GloboClimaAPI.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id) 
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
