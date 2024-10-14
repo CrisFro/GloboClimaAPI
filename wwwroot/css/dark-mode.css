@@ -22,16 +22,6 @@
         color: #b0bec5;
     }
 
-    body.dark-mode button {
-        background-color: #1a73e8;
-        color: #ffffff;
-        border-color: #1a73e8;
-    }
-
-        body.dark-mode button:hover {
-            background-color: #1565c0;
-        }
-
     body.dark-mode input:focus,
     body.dark-mode select:focus,
     body.dark-mode textarea:focus {
@@ -48,16 +38,14 @@
         border-color: var(--color-primary);
     }
 
-    body.dark-mode .card,
-    body.dark-mode .forecast-container,
-    body.dark-mode .favorite-card {
-        background-color: var(--color-bg-secondary);
-        color: var(--color-text);
-        border: 1px solid #394857;
+    body.dark-mode button {
+        background-color: #1a73e8;
+        color: #ffffff;
+        border-color: #1a73e8;
     }
 
-        body.dark-mode .card.shadow-lg {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        body.dark-mode button:hover {
+            background-color: #1565c0;
         }
 
     body.dark-mode .btn-primary {
@@ -69,6 +57,34 @@
         body.dark-mode .btn-primary:hover {
             background-color: #1565c0;
             border-color: #1565c0;
+        }
+
+    button,
+    .btn-dark-mode,
+    .logout-button,
+    body.dark-mode button {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        background: none;
+    }
+
+        button:hover,
+        .btn-dark-mode:hover,
+        .logout-button:hover,
+        body.dark-mode button:hover {
+            border: none;
+            outline: none;
+            box-shadow: none;
+        }
+
+        button:focus,
+        .btn-dark-mode:focus,
+        .logout-button:focus,
+        body.dark-mode button:focus {
+            border: none;
+            outline: none;
+            box-shadow: none;
         }
 
     body.dark-mode .favorite-icon,
@@ -96,15 +112,17 @@
             transform: scale(1.2);
         }
 
-    body.dark-mode table {
+    body.dark-mode .card,
+    body.dark-mode .forecast-container,
+    body.dark-mode .favorite-card {
         background-color: var(--color-bg-secondary);
         color: var(--color-text);
-    }
-
-    body.dark-mode th,
-    body.dark-mode td {
         border: 1px solid #394857;
     }
+
+        body.dark-mode .card.shadow-lg {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
 
     body.dark-mode .modal-content,
     body.dark-mode .modal-body,
@@ -121,6 +139,16 @@
 
     body.dark-mode .modal-title {
         color: var(--color-text);
+    }
+
+    body.dark-mode table {
+        background-color: var(--color-bg-secondary);
+        color: var(--color-text);
+    }
+
+    body.dark-mode th,
+    body.dark-mode td {
+        border: 1px solid #394857;
     }
 
     body.dark-mode .forecast-card {
@@ -163,6 +191,18 @@ body.dark-mode .btn-dark-mode {
         transform: scale(1.1);
     }
 
+body.dark-mode .btn-neutral {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: none; 
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    body.dark-mode .btn-neutral:hover {
+        background-color: var(--color-primary);
+        color: #ffffff;
+    }
+
 body.dark-mode .logout-button {
     color: #ffffff;
 }
@@ -173,23 +213,4 @@ body.dark-mode .logout-button {
 
     body.dark-mode .logout-button:hover {
         color: #ff4747;
-    }
-
-button, .btn-dark-mode, .logout-button, body.dark-mode button {
-    border: none;
-    outline: none;
-    box-shadow: none;
-    background: none;
-}
-
-    button:hover, .btn-dark-mode:hover, .logout-button:hover, body.dark-mode button:hover {
-        border: none;
-        outline: none;
-        box-shadow: none;
-    }
-
-    button:focus, .btn-dark-mode:focus, .logout-button:focus, body.dark-mode button:focus {
-        border: none;
-        outline: none;
-        box-shadow: none;
     }
