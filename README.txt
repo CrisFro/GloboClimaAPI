@@ -23,4 +23,4 @@ O projeto utiliza duas tabelas principais no DynamoDB:
 
 ### Como Recriar as Tabelas
 
-Você pode recriar essas tabelas usando o DynamoDB na AWS ou o DynamoDB Local. Abaixo estão os arquivos JSON que podem ser usados para criar as tabelas.
+Você pode recriar essas tabelas usando o DynamoDB na AWS ou o DynamoDB Local. Inclui no projeto os arquivos JSON que podem ser usados para criar as tabelas.
